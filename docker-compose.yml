@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+
+  placementmail-ai:
+
+    build: .
+
+    container_name: placementmail-ai
+
+    ports:
+      - "8000:8000"
+
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    volumes:
+      - ./placementmail.db:/app/placementmail.db
+      - ./credentials.json:/app/credentials.json
+      - ./token.json:/app/token.json
