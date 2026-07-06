@@ -8,10 +8,6 @@ class HistoryService:
         self.service = gmail.service
 
     def get_new_messages(self, start_history_id: str):
-        """
-        Returns all newly added Gmail message IDs
-        since the supplied history ID.
-        """
 
         response = (
             self.service.users()
@@ -26,12 +22,24 @@ class HistoryService:
 
         message_ids = []
 
+        seen = set()
+
         for history in response.get("history", []):
 
             for message in history.get("messagesAdded", []):
 
-                message_ids.append(
-                    message["message"]["id"]
-                )
+                message_id = message["message"]["id"]
 
-        return message_ids
+                if message_id not in seen:
+                    seen.add(message_id)
+                    message_ids.append(message_id)
+
+        latest_history_id = response.get(
+            "historyId",
+            start_history_id,
+        )
+
+        return {
+            "message_ids": message_ids,
+            "history_id": latest_history_id,
+        }
